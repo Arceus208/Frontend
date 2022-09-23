@@ -1,19 +1,19 @@
-import type { NextPage } from "next";
-
-import { NavBar } from "../components/navbar/NavBar";
+import React from "react";
 import { Box, Flex } from "@chakra-ui/react";
-import { Advertise } from "../components/ui/Advertise";
-import { ProductBox } from "../components/ui/ProductBox";
+import { NavBar } from "../components/navbar/NavBar";
 import { Footer } from "../components/ui/Footer";
 import { Wrapper } from "../components/ui/Wrapper";
+import { ProductBox } from "../components/ui/ProductBox";
 
-const Home: NextPage = () => {
+interface productsProps {}
+
+const Products: React.FC<productsProps> = ({}) => {
   return (
     <Box>
       <NavBar></NavBar>
-      <Advertise></Advertise>
       <Wrapper>
         <Flex
+          h="700"
           flexDirection={["column", "row", "row", "row"]}
           flexWrap="wrap"
           justifyContent="space-around"
@@ -50,4 +50,4 @@ const Home: NextPage = () => {
   );
 };
 
-export default Home;
+export default Products;
