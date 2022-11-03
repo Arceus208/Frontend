@@ -1,27 +1,19 @@
 import React from "react";
-import {
-  Box,
-  Flex,
-  Icon,
-  Input,
-  Text,
-  Link,
-  Button,
-  VStack,
-} from "@chakra-ui/react";
+import { Box, Flex, Icon, Input, Text, Link, Button } from "@chakra-ui/react";
+import { FaFacebookF, FaTwitter, FaTumblr, FaYoutube } from "react-icons/fa";
 import NextLink from "next/link";
 
 interface FooterProps {}
 
 export const Footer: React.FC<FooterProps> = ({}) => {
   return (
-    <Box bgColor={"black"} color="white" px={[10, 10, 10, 200]} mt="auto">
+    <Box bgColor={"black"} color="white" px={[10, 10, 10, 100]} mt="auto" p={4}>
       <Flex
         justifyContent="space-between"
         flexDirection={["column", "column", "row", "row"]}
       >
         <Box mt={10}>
-          <Text fontWeight={400} fontSize={25} mb={3}>
+          <Text fontWeight={400} fontSize={[15, 15, 25, 25]} mb={3}>
             ALWAYS UPDATED
           </Text>
           <Text color="gray">Sign up for latest news, offer and updates</Text>
@@ -31,24 +23,24 @@ export const Footer: React.FC<FooterProps> = ({}) => {
               borderRadius={"none"}
               variant="filled"
             ></Input>
-            <Button colorScheme={"red"} borderRadius={"none"}>
+            <Button colorScheme="teal" borderRadius={"none"}>
               Sign Up
             </Button>
           </Flex>
         </Box>
-        <Box mt={10}>
-          <Text fontWeight={400} fontSize={25} mb={3}>
+        <Flex mt={10} flexDirection="column">
+          <Text fontWeight={400} fontSize={[15, 15, 25, 25]} mb={3}>
             FOLLOW US
           </Text>
-          <Flex>
-            <Icon></Icon>
-            <Icon></Icon>
-            <Icon></Icon>
-            <Icon></Icon>
-          </Flex>
-        </Box>
-        <Box mt={10}>
-          <Text fontWeight={400} fontSize={25} mb={3}>
+          <Box>
+            <Icon as={FaFacebookF} boxSize={6} mx="0.3rem"></Icon>
+            <Icon as={FaTwitter} boxSize={6} mx="0.3rem"></Icon>
+            <Icon as={FaTumblr} boxSize={6} mx="0.3rem"></Icon>
+            <Icon as={FaYoutube} boxSize={6} mx="0.3rem"></Icon>
+          </Box>
+        </Flex>
+        <Flex mt={10} flexDirection="column">
+          <Text fontWeight={400} fontSize={[15, 15, 25, 25]} mb={3}>
             LINKS
           </Text>
           <Flex flexDirection="column">
@@ -83,7 +75,7 @@ export const Footer: React.FC<FooterProps> = ({}) => {
               </Link>
             </NextLink>
           </Flex>
-        </Box>
+        </Flex>
       </Flex>
       <Flex>
         <Text color="gray">Copyright &copy;</Text>

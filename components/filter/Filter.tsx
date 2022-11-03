@@ -1,98 +1,223 @@
-import React from "react";
-import { Box, Button, Flex } from "@chakra-ui/react";
+import React, { useEffect, useState } from "react";
+import { Box, Button, Flex, Text } from "@chakra-ui/react";
 import { Formik, Form, Field } from "formik";
 import { CustomInput } from "../custom_components/CustomInput";
-import { spellCheckBox, trapCheckBox, monsterCheckBox } from "../../data/data";
-import { useRouter } from "next/router";
+import {
+  spellCheckBox,
+  trapCheckBox,
+  monsterCheckBox,
+  cardsCheckBox,
+  accessoryCheckBox,
+} from "../../data/data";
+import router, { useRouter } from "next/router";
+import { CustomSelect } from "../custom_components/CustomSelect";
 
-interface FilterValues {
-  search: string;
-  category: string;
-  subCategory: [];
-}
+export const Filter: React.FC<{}> = ({}) => {
+  const { query, isReady } = useRouter();
+  const [isOpen, setIsOpen] = useState<boolean>(false);
 
-interface FilterProps {
-  prePath: string;
-}
-
-export const Filter: React.FC<FilterProps> = ({ prePath }) => {
-  const initialValues: FilterValues = {
-    search: "",
+  const [initialValues, setInitialValues] = useState({
     category: "",
-    subCategory: [],
-  };
+    minPrice: "",
+    maxPrice: "",
+    subCategory: [] as string[],
+  });
 
-  const router = useRouter();
+  useEffect(() => {
+    if (isReady) {
+      setInitialValues({
+        category: (query.category as string) || "",
+        minPrice: (query.minPrice as string) || "",
+        maxPrice: (query.maxPrice as string) || "",
+        subCategory: (query.subCategory as string)?.split(" ") || [],
+      });
+    }
+  }, [isReady, query]);
+
   return (
-    <Box>
-      <Formik
-        initialValues={initialValues}
-        onSubmit={async (values) => {
-          let path = "";
-
-          if (values.search.trim().length !== 0) {
-            path = path + `search=${values.search}&`;
-          }
-
-          if (values.subCategory.length !== 0) {
-            path = path + `subCategory=${values.subCategory.join("+")}`;
-          }
-
-          router.push(`${prePath}?${path}`);
-        }}
+    <Flex flexDirection="column">
+      <Flex justifyContent="center" my={4}>
+        <Button
+          mx={4}
+          w="9rem"
+          display={["block", "block", "none"]}
+          colorScheme="teal"
+          onClick={() => {
+            setIsOpen((prev) => !prev);
+          }}
+        >
+          + Filter
+        </Button>
+      </Flex>
+      <Box
+        boxShadow="xl"
+        p={7}
+        maxW={["100%", "100%", "18rem"]}
+        display={{ base: isOpen ? "block" : "none", md: "block" }}
+        mb={4}
       >
-        {(props) => (
-          <Form>
-            <CustomInput
-              label="Search"
-              name="search"
-              placeholder="Search card name.."
-              type="text"
-            ></CustomInput>
-            <Flex direction={"column"} justifyContent="space-around" mt={5}>
-              <Flex direction={"column"} mb={[7]}>
-                {spellCheckBox.map((item) => (
-                  <Box key={Math.random()}>
-                    <Field
-                      type="checkbox"
-                      name="subCategory"
-                      value={item.value}
-                    />
-                    {item.label}
-                  </Box>
-                ))}
+        <Formik
+          initialValues={initialValues}
+          enableReinitialize={true}
+          onSubmit={(values: any) => {
+            const queryObj = {} as any;
+            for (let key in values) {
+              if (values[key] !== "") {
+                if (key === "subCategory" && values[key].length !== 0) {
+                  queryObj[key] = values[key].join(" ");
+                } else {
+                  queryObj[key] = values[key];
+                }
+              }
+            }
+
+            queryObj.search = query.search;
+
+            router.push(
+              {
+                pathname: `/searchResult`,
+                query: { ...queryObj },
+              },
+              undefined,
+              {
+                shallow: true,
+              }
+            );
+          }}
+        >
+          {(props) => (
+            <Form>
+              <CustomSelect
+                handleChange={props.handleChange}
+                setField={props.setFieldValue}
+                name="category"
+                label="Category"
+                placeholder="All"
+                value={props.values}
+                category={["card", "cards", "accessory"]}
+              ></CustomSelect>
+              {props.values.category === "card" && (
+                <Flex my={5} flexDirection="column" p={3}>
+                  <Flex
+                    flexDirection="column"
+                    py={2}
+                    borderBottom="1px solid lightgrey"
+                  >
+                    {spellCheckBox.map((item) => (
+                      <Box key={Math.random()}>
+                        <Field
+                          type="checkbox"
+                          name="subCategory"
+                          value={item.value}
+                        />
+                        <Text display="inline" ml="0.3rem">
+                          {item.label}
+                        </Text>
+                      </Box>
+                    ))}
+                  </Flex>
+                  <Flex
+                    flexDirection="column"
+                    py={2}
+                    borderBottom="1px solid lightgrey"
+                  >
+                    {trapCheckBox.map((item) => (
+                      <Box key={Math.random()}>
+                        <Field
+                          type="checkbox"
+                          name="subCategory"
+                          value={item.value}
+                        />
+                        <Text display="inline" ml="0.3rem">
+                          {item.label}
+                        </Text>
+                      </Box>
+                    ))}
+                  </Flex>
+                  <Flex
+                    flexDirection="column"
+                    py={2}
+                    borderBottom="1px solid lightgrey"
+                  >
+                    {monsterCheckBox.map((item) => (
+                      <Box key={Math.random()}>
+                        <Field
+                          type="checkbox"
+                          name="subCategory"
+                          value={item.value}
+                        />
+                        <Text display="inline" ml="0.3rem">
+                          {item.label}
+                        </Text>
+                      </Box>
+                    ))}
+                  </Flex>
+                </Flex>
+              )}
+              {props.values.category === "cards" && (
+                <Flex my={5} flexDirection="column" p={3}>
+                  <Flex flexDirection="column">
+                    {cardsCheckBox.map((item) => (
+                      <Box key={Math.random()}>
+                        <Field
+                          type="checkbox"
+                          name="subCategory"
+                          value={item.value}
+                        />
+                        <Text display="inline" ml="0.3rem">
+                          {item.label}
+                        </Text>
+                      </Box>
+                    ))}
+                  </Flex>
+                </Flex>
+              )}
+
+              {props.values.category === "accessory" && (
+                <Flex my={5} flexDirection="column" p={3}>
+                  <Flex flexDirection="column">
+                    {accessoryCheckBox.map((item) => (
+                      <Box key={Math.random()}>
+                        <Field
+                          type="checkbox"
+                          name="subCategory"
+                          value={item.value}
+                        />
+                        <Text display="inline" ml="0.3rem">
+                          {item.label}
+                        </Text>
+                      </Box>
+                    ))}
+                  </Flex>
+                </Flex>
+              )}
+              <Text mt={2}>Price:</Text>
+              <Flex alignItems="flex-end">
+                <CustomInput
+                  label=""
+                  min="0"
+                  name="minPrice"
+                  type="number"
+                  placeholder="min"
+                ></CustomInput>
+                <Text p={4}>-</Text>
+                <CustomInput
+                  label=""
+                  min="0"
+                  name="maxPrice"
+                  type="number"
+                  placeholder="max"
+                ></CustomInput>
               </Flex>
-              <Flex direction={"column"} mb={[7]}>
-                {trapCheckBox.map((item) => (
-                  <Box key={Math.random()}>
-                    <Field
-                      type="checkbox"
-                      name="subCategory"
-                      value={item.value}
-                    />
-                    {item.label}
-                  </Box>
-                ))}
+              <Flex justifyContent="center" mt={3}>
+                <Button type="submit" colorScheme="teal" minW={200}>
+                  Apply filter
+                </Button>
               </Flex>
-              <Flex direction={"column"}>
-                {monsterCheckBox.map((item) => (
-                  <Box key={Math.random()}>
-                    <Field
-                      type="checkbox"
-                      name="subCategory"
-                      value={item.value}
-                    />
-                    {item.label}
-                  </Box>
-                ))}
-              </Flex>
-              <Button mt={5} type="submit" colorScheme="red">
-                Search
-              </Button>
-            </Flex>
-          </Form>
-        )}
-      </Formik>
-    </Box>
+            </Form>
+          )}
+        </Formik>
+      </Box>
+    </Flex>
   );
 };

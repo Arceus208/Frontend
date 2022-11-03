@@ -2,9 +2,11 @@ import { Box, Button } from "@chakra-ui/react";
 import { Form, Formik } from "formik";
 import React from "react";
 import { Wrapper } from "../../components/ui/Wrapper";
-import axios from "axios";
+
 import { CustomInput } from "../../components/custom_components/CustomInput";
 import { useRouter } from "next/router";
+import { axiosPublic } from "../../utils/axiosPublic";
+import { passwordSchema } from "../../yup_schema/validation";
 
 const ResetPassword: React.FC<{}> = ({}) => {
   const router = useRouter();
@@ -17,21 +19,14 @@ const ResetPassword: React.FC<{}> = ({}) => {
         <Box>
           <Formik
             initialValues={initialValues}
+            validationSchema={passwordSchema}
             onSubmit={async (values) => {
               if (router.isReady) {
                 if (query) {
-                  const response = await axios.post(
-                    `${process.env.NEXT_PUBLIC_HOST}/users/reset_password/${query[0]}/${query[1]}`,
-                    values,
-                    {
-                      headers: {
-                        "Content-Type": "application/json",
-                        Accept: "application/json",
-                      },
-                    }
+                  await axiosPublic.post(
+                    `/users/reset_password/${query[0]}/${query[1]}`,
+                    values
                   );
-
-                  console.log(response.data);
                 }
               }
             }}

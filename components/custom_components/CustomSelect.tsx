@@ -1,5 +1,4 @@
 import { Select, Text } from "@chakra-ui/react";
-import { useField } from "formik";
 import React from "react";
 
 interface CustomSelectProps {
@@ -7,25 +6,38 @@ interface CustomSelectProps {
   name: string;
   placeholder: string;
   category: string[];
+  setField: any;
+  handleChange: any;
+  value: any;
 }
 
 export const CustomSelect: React.FC<CustomSelectProps> = ({
   label,
   category,
+  setField,
+  handleChange,
+  value,
   ...props
 }) => {
-  const [field, meta] = useField(props);
   return (
     <>
-      <Text fontWeight={400}>{label}</Text>
-      <Select isInvalid={!!meta.error} {...props} {...field}>
+      <Text fontWeight={400} my={2}>
+        {label}
+      </Text>
+      <Select
+        value={value.category}
+        {...props}
+        onChange={(e) => {
+          handleChange(e);
+          setField("subCategory", []);
+        }}
+      >
         {category.map((item, index) => (
-          <option key={index + Math.random()}>{item}</option>
+          <option key={index + Math.random()} value={item}>
+            {item}
+          </option>
         ))}
       </Select>
-      {meta.error && meta.touched && (
-        <p style={{ color: "red" }}>{meta.error}</p>
-      )}
     </>
   );
 };

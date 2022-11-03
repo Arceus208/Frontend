@@ -23,3 +23,17 @@ export const monsterCheckBox = [
   { value: "xyz_monster", label: "XYZ Monster" },
   { value: "pendulum_monster", label: "Pendulum Monster" },
 ];
+
+export const cardsCheckBox = [
+  { value: "special", label: "Special Box" },
+  { value: "structure_deck", label: "Structure Deck" },
+  { value: "booster_pack", label: "Booster Pack" },
+];
+
+export const accessoryCheckBox = [
+  { value: "sleeves", label: "Sleeves" },
+  { value: "playmat", label: "Playmat" },
+  { value: "other", label: "Other" },
+];
+
+export const categoryArray = ["card", "cards", "accessory"];

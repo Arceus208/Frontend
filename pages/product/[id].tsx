@@ -1,30 +1,41 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Flex, Image, Box, Text, Button, Input } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { NavBar } from "../../components/navbar/NavBar";
-import axios from "axios";
+
 import { useShopContext } from "../../context/shopContext";
 import { Wrapper } from "../../components/ui/Wrapper";
 import { Footer } from "../../components/ui/Footer";
+import { axiosPublic } from "../../utils/axiosPublic";
+import useSWR, { Fetcher } from "swr";
 
 interface Product {
   id: string;
-  image: string;
+  mainImg: { path: string };
+  images: { path: string; photoId: string }[];
+  curPrice: number;
   price: number;
+  discount: number;
   description: string;
   name: string;
   quantity: number;
 }
 
 const Product: React.FC<{}> = ({}) => {
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [product, setProduct] = useState<Product>();
   const [quantity, setQuantity] = useState<number>(1);
+  const [index, setIndex] = useState(0);
   const router = useRouter();
   const { addProduct } = useShopContext();
+  const fetcher: Fetcher<Product, string> = (url: string) =>
+    axiosPublic.get(url).then((res) => res.data.product);
+
+  const { data, error } = useSWR(
+    router.query.id ? `/products/product/${router.query.id}` : null,
+    fetcher
+  );
 
   const addToCart = () => {
-    addProduct(product, quantity);
+    addProduct(data, quantity);
   };
 
   const changeQuantity: React.ChangeEventHandler<HTMLInputElement> = (
@@ -45,35 +56,14 @@ const Product: React.FC<{}> = ({}) => {
     }
   };
 
-  let productId = router.query.id;
-
-  useEffect(() => {
-    const getData = async () => {
-      setIsLoading(true);
-      if (router.isReady) {
-        const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_HOST}/products/product/${productId}`
-        );
-
-        if (response.status === 201) {
-          setProduct(response.data.product);
-          setIsLoading(false);
-        } else {
-          setIsLoading(false);
-        }
-      }
-    };
-
-    getData();
-  }, [productId, router.isReady]);
   return (
     <Box>
       <NavBar></NavBar>
       <Wrapper>
-        {isLoading && <Box>Loading</Box>}
-        {!isLoading && product && (
+        {error && <Box>Some error happend</Box>}
+        {!data && !error && <Box>Loading</Box>}
+        {data && !error && (
           <Flex
-            h={700}
             flexDirection={["column", "column", "row", "row"]}
             justifyContent={[
               "center",
@@ -83,23 +73,69 @@ const Product: React.FC<{}> = ({}) => {
             ]}
             align={["center", "center", "flex-start"]}
           >
-            <Image src={product.image} alt="pic" w={200} h={300}></Image>
-            <Flex flexDirection={"column"} maxW={[200, 400, 500, 500]}>
-              <Text fontSize={30} fontWeight={100}>
-                {product.name}
+            <Flex flexDirection="column" align="center" p={5}>
+              <Image
+                mx={5}
+                src={data.images[index].path}
+                alt="pic"
+                w={[100, 200, 200, 200]}
+                h={[150, 300, 300, 300]}
+                fit="contain"
+              ></Image>
+              <Flex mt={10}>
+                {data.images.map((img, index) => (
+                  <Box
+                    key={img.photoId}
+                    border="1px solid black"
+                    p="5px"
+                    m="2px"
+                    onMouseEnter={() => {
+                      setIndex(index);
+                    }}
+                  >
+                    <Image
+                      src={img.path}
+                      alt="pic"
+                      fit="contain"
+                      w={50}
+                      h={50}
+                    ></Image>
+                  </Box>
+                ))}
+              </Flex>
+            </Flex>
+            <Flex flexDirection={"column"} maxW={[200, 400, 500, 500]} p={5}>
+              <Text fontSize={[25, 25, 30, 30]} fontWeight={500}>
+                {data.name}
               </Text>
-              <Text my={3} color="grey">
-                {product.price}$
-              </Text>
+              <Flex align="center">
+                {data.discount > 0 && (
+                  <Text color="red" fontSize={20} fontWeight={500} m={1}>
+                    {data.curPrice}$
+                  </Text>
+                )}
+                <Text
+                  color={data.discount > 0 ? "grey" : "black"}
+                  fontSize={data.discount > 0 ? 15 : 20}
+                  fontWeight={data.discount > 0 ? 200 : 500}
+                  textDecoration={data.discount > 0 ? "line-through" : "none"}
+                >
+                  {data.price}$
+                </Text>
+              </Flex>
               <Text mb={4} pb={2} borderBottom="1px" borderColor="lightgrey">
                 <Text as="span" color="red">
                   Shipping
                 </Text>{" "}
                 calculated at checkout
               </Text>
-              <Text>Description:</Text>
-              <Text mb={10}>{product.description}</Text>
-              <Text mb="5px">Quantity</Text>
+              <Text fontWeight="bold">Description:</Text>
+              <Text whiteSpace="pre-wrap" mb={10}>
+                {data.description}
+              </Text>
+              <Text mb="5px" fontWeight="bold">
+                Quantity
+              </Text>
               <Flex mb={8} w={140}>
                 <Button onClick={decreaseQuantity}>-</Button>
                 <Input
@@ -123,7 +159,6 @@ const Product: React.FC<{}> = ({}) => {
             </Flex>
           </Flex>
         )}
-        {!isLoading && !product && <Box>Page not found</Box>}
       </Wrapper>
       <Footer></Footer>
     </Box>

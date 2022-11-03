@@ -1,34 +1,22 @@
 import React from "react";
-import { Stack, Link, Box, Text } from "@chakra-ui/react";
+import { Stack, Link, Box } from "@chakra-ui/react";
 import NextLink from "next/link";
 import { ShoppingCartIcon } from "./ShoppingCartIcon";
-import { useAuthContext } from "../../context/authContext";
+import { useRouter } from "next/router";
+
+import { ProfileIcon } from "./ProfileIcon";
+
+import { SearchBar } from "./SearchBar";
+import { useUser } from "../../hooks/useUser";
 
 interface MenuLinksProps {
   isOpen: boolean;
 }
 
 export const MenuLinks: React.FC<MenuLinksProps> = ({ isOpen }) => {
-  const { isLogin, logout } = useAuthContext();
+  const { loggedIn, loading } = useUser();
+  const router = useRouter();
 
-  const logoutHandle = async () => {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_HOST}/users/logout`,
-      {
-        method: "POST",
-        credentials: "include",
-        mode: "cors",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-      }
-    );
-
-    const data = await response.json();
-    logout();
-    console.log(data.message);
-  };
   return (
     <Box
       display={{ base: isOpen ? "block" : "none", md: "block" }}
@@ -38,36 +26,40 @@ export const MenuLinks: React.FC<MenuLinksProps> = ({ isOpen }) => {
         spacing={8}
         align="center"
         justify={["center", "space-between", "flex-end", "flex-end"]}
-        direction={["column", "row", "row", "row"]}
+        direction={["column", "column", "row", "row"]}
         pt={[4, 4, 0, 0]}
       >
+        <SearchBar></SearchBar>
         <NextLink href={"/"}>
-          <Link>Home</Link>
+          <Link textTransform="uppercase" color="white" fontWeight="bold">
+            Home
+          </Link>
         </NextLink>
         <NextLink href={"/products"}>
-          <Link>Products</Link>
+          <Link textTransform="uppercase" color="white" fontWeight="bold">
+            Products
+          </Link>
         </NextLink>
-        <NextLink href={"/accessories"}>
-          <Link>FAQ</Link>
+        <NextLink href={"/faq"}>
+          <Link textTransform="uppercase" color="white" fontWeight="bold">
+            FAQ
+          </Link>
         </NextLink>
-        {!isLogin && (
+        {loggedIn && !loading ? null : (
           <NextLink href={"/register"}>
-            <Link>Register</Link>
+            <Link textTransform="uppercase" color="white" fontWeight="bold">
+              Register
+            </Link>
           </NextLink>
         )}
-        {!isLogin && (
-          <NextLink href={"/login"}>
-            <Link>Login</Link>
+        {loggedIn && !loading ? null : (
+          <NextLink href={`/login?next=${router.pathname}`}>
+            <Link textTransform="uppercase" color="white" fontWeight="bold">
+              Login
+            </Link>
           </NextLink>
         )}
-        {isLogin && (
-          <Text
-            onClick={logoutHandle}
-            _hover={{ textDecoration: "underline", cursor: "pointer" }}
-          >
-            Logout
-          </Text>
-        )}
+        {loggedIn && !loading && <ProfileIcon></ProfileIcon>}
 
         <ShoppingCartIcon></ShoppingCartIcon>
       </Stack>

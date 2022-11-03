@@ -7,6 +7,7 @@ interface CustomInputProps {
   name: string;
   type: string;
   placeholder: string;
+  min?: string;
 }
 
 export const CustomInput: React.FC<CustomInputProps> = ({
@@ -15,7 +16,7 @@ export const CustomInput: React.FC<CustomInputProps> = ({
 }) => {
   const [field, meta] = useField(props);
   return (
-    <Box>
+    <Box my={3} mx={3}>
       <Text fontWeight={400}>{label}</Text>
       <Input
         variant={"flushed"}

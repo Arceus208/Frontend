@@ -1,4 +1,11 @@
-import { createContext, ReactNode, useContext, useState } from "react";
+import {
+  createContext,
+  Dispatch,
+  ReactNode,
+  SetStateAction,
+  useContext,
+  useState,
+} from "react";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 
 interface ProviderProps {
@@ -22,6 +29,7 @@ interface ShopContextProps {
   addProduct: (product: any, amount: number) => void;
   openCart: () => void;
   closeCart: () => void;
+  setCartItems: Dispatch<SetStateAction<CartItem[]>>;
   isOpen: boolean;
   totalCartQuantity: number;
   totalPrice: number;
@@ -86,9 +94,9 @@ export const CartProvider = ({ children }: ProviderProps) => {
           {
             id: product.id,
             name: product.name,
-            price: product.price,
+            price: product.curPrice,
             quantity: amount,
-            image: product.image,
+            image: product.mainImg.path,
           },
         ];
       }
@@ -140,6 +148,7 @@ export const CartProvider = ({ children }: ProviderProps) => {
   return (
     <ShopContext.Provider
       value={{
+        setCartItems,
         increaseItemQuantity,
         decreaseItemQuantity,
         getItemQuantity,

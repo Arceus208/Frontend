@@ -1,15 +1,17 @@
-import { Box, Button } from "@chakra-ui/react";
+import { Box, Button, Text } from "@chakra-ui/react";
 import { Form, Formik } from "formik";
-import React from "react";
+import React, { useState } from "react";
 import { CustomInput } from "../components/custom_components/CustomInput";
 import { NavBar } from "../components/navbar/NavBar";
 import { Wrapper } from "../components/ui/Wrapper";
-import axios from "axios";
+
+import { axiosPublic } from "../utils/axiosPublic";
 
 interface forgotPasswordProps {}
 
-const forgotPassword: React.FC<forgotPasswordProps> = ({}) => {
+const ForgotPassword: React.FC<forgotPasswordProps> = ({}) => {
   const initialValues = { email: "" };
+  const [message, setMessage] = useState<string>("");
   return (
     <Box>
       <NavBar></NavBar>
@@ -18,18 +20,14 @@ const forgotPassword: React.FC<forgotPasswordProps> = ({}) => {
           <Formik
             initialValues={initialValues}
             onSubmit={async (values) => {
-              const response = await axios.post(
-                `${process.env.NEXT_PUBLIC_HOST}/users/forgot_password`,
-                values,
-                {
-                  headers: {
-                    "Content-Type": "application/json",
-                    Accept: "application/json",
-                  },
-                }
+              const response = await axiosPublic.post(
+                `/users/forgot_password`,
+                values
               );
 
-              console.log(response.data);
+              if (response.status === 201) {
+                setMessage(response.data.message);
+              }
             }}
           >
             {(props) => (
@@ -41,6 +39,7 @@ const forgotPassword: React.FC<forgotPasswordProps> = ({}) => {
                   type="email"
                 ></CustomInput>
                 <Button type="submit">Submit</Button>
+                {message && <Text>{message}</Text>}
               </Form>
             )}
           </Formik>
@@ -50,4 +49,4 @@ const forgotPassword: React.FC<forgotPasswordProps> = ({}) => {
   );
 };
 
-export default forgotPassword;
+export default ForgotPassword;

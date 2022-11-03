@@ -1,49 +1,36 @@
 import type { NextPage } from "next";
 
 import { NavBar } from "../components/navbar/NavBar";
-import { Box, Flex } from "@chakra-ui/react";
-import { Advertise } from "../components/ui/Advertise";
-import { ProductBox } from "../components/ui/ProductBox";
+import { Box } from "@chakra-ui/react";
+
 import { Footer } from "../components/ui/Footer";
 import { Wrapper } from "../components/ui/Wrapper";
+import { CustomSlider } from "../components/ui/home/CustomSlider";
+import { SalesProducts } from "../components/ui/home/SalesProducts";
+import { NewProducts } from "../components/ui/home/NewProduct";
+import { BestSeller } from "../components/ui/home/BestSeller";
+import { SpecialProduct1 } from "../components/ui/home/SpecialProduct1";
+import { SpecialProduct2 } from "../components/ui/home/SpecialProduct2";
 
 const Home: NextPage = () => {
   return (
     <Box>
       <NavBar></NavBar>
-      <Advertise></Advertise>
+      <CustomSlider></CustomSlider>
       <Wrapper>
-        <Flex
-          flexDirection={["column", "row", "row", "row"]}
-          flexWrap="wrap"
-          justifyContent="space-around"
-          justify="center"
-          align="center"
-        >
-          <ProductBox
-            imageUrl="/image/bls.png"
-            to="/products/cards"
-            name="Cards"
-            width={200}
-            height={300}
-          ></ProductBox>
-
-          <ProductBox
-            imageUrl="/image/p4.png"
-            to="/"
-            name="Box"
-            width={300}
-            height={300}
-          ></ProductBox>
-
-          <ProductBox
-            imageUrl="/image/p5.jpg"
-            to="/"
-            name="Accessories"
-            width={170}
-            height={270}
-          ></ProductBox>
-        </Flex>
+        <Box>
+          <SalesProducts></SalesProducts>
+          <NewProducts></NewProducts>
+          <SpecialProduct1
+            imgPath="url('/image/blw.jpg')"
+            keyWord="structure_deck"
+          ></SpecialProduct1>
+          <SpecialProduct2
+            keyWord="playmat"
+            imgPath="url('/image/doll.jpg')"
+          ></SpecialProduct2>
+          <BestSeller></BestSeller>
+        </Box>
       </Wrapper>
       <Footer></Footer>
     </Box>

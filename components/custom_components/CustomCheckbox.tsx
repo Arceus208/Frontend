@@ -17,7 +17,7 @@ export const CustomCheckbox: React.FC<CustomCheckboxProps> = ({
   return (
     <>
       <Checkbox {...field} {...props}>
-        {label}
+        <Text>{label}</Text>
       </Checkbox>
     </>
   );

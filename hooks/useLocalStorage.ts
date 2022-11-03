@@ -11,7 +11,7 @@ export function useLocalStorage<T>() {
       return;
     }
 
-    window.localStorage.setItem("mycart", JSON.stringify(value));
+    localStorage.setItem("mycart", JSON.stringify(value));
   }, [value]);
 
   useEffect(() => {

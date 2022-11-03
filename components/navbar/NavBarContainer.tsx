@@ -19,6 +19,9 @@ export const NavBarContainer: React.FC<NavBarContainerProps> = ({
       p={8}
       bg={["black", "black", "black", "black"]}
       color={["white", "white", "white", "white"]}
+      position="sticky"
+      top={0}
+      zIndex={100}
       {...props}
     >
       {children}

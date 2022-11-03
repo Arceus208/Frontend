@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import { Box, Flex, Image, Text, Icon, Button, Input } from "@chakra-ui/react";
-import { MdDeleteForever } from "react-icons/md";
+import React from "react";
+import { Box, Flex, Image, Text, Button } from "@chakra-ui/react";
+
 import { useShopContext } from "../../context/shopContext";
 
 interface CheckoutItemProps {
@@ -30,7 +30,7 @@ export const CheckoutItem: React.FC<CheckoutItemProps> = ({
   };
 
   return (
-    <Box boxShadow="base" p={5} mb={10}>
+    <Box boxShadow="xl" p={[5, 10]} mb={10}>
       <Flex
         flexDirection={["column", "column", "row", "row"]}
         justifyContent="space-between"
@@ -40,12 +40,12 @@ export const CheckoutItem: React.FC<CheckoutItemProps> = ({
           justify="center"
           flexDirection={["column", "column", "row", "row"]}
         >
-          <Image src={image} alt="Pic" w={100} h={150}></Image>
+          <Image src={image} alt="Pic" w={100} h={150} fit="contain"></Image>
           <Flex ml={[0, 0, 10, 10]} my={3} flexDirection="column">
             <Text fontSize={20} fontWeight={500}>
               {name}
             </Text>
-            <Text fontSize={12}>Price per unit: {price}$</Text>
+            <Text fontSize={12}>Price per unit: {price}&euro; </Text>
             <Text
               color="red"
               _hover={{ textDecoration: "underline", cursor: "pointer" }}
@@ -69,7 +69,7 @@ export const CheckoutItem: React.FC<CheckoutItemProps> = ({
             </Flex>
           </Flex>
           <Text ml={[0, 0, 20, 20]} fontWeight={500}>
-            {price * quantity}$
+            {price * quantity}&euro;
           </Text>
         </Flex>
       </Flex>

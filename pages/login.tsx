@@ -1,46 +1,49 @@
 import { Button, Flex, Text, Icon, Box, Link } from "@chakra-ui/react";
 import { Form, Formik, FormikProps } from "formik";
 import { SiFacebook, SiTwitter, SiGoogle } from "react-icons/si";
-import React from "react";
-import { useRouter } from "next/router";
+import React, { useEffect, useState } from "react";
+import router from "next/router";
 import NextLink from "next/link";
-import { io } from "socket.io-client";
 
 import { CustomInput } from "../components/custom_components/CustomInput";
 
 import { NavBar } from "../components/navbar/NavBar";
 import { useAuthContext } from "../context/authContext";
-
-/* const socket = io(`${process.env.NEXT_PUBLIC_HOST}`); */
-
-interface LoginProps {
-  data: any;
-}
+import { Wrapper } from "../components/ui/Wrapper";
+import { Footer } from "../components/ui/Footer";
+import { useUser } from "../hooks/useUser";
 
 interface FormValues {
   email: string;
   password: string;
 }
 
-const Login: React.FC<LoginProps> = () => {
-  const { setTokenValue } = useAuthContext();
-  const { isLogin } = useAuthContext();
-  const router = useRouter();
+const Login: React.FC<{}> = () => {
+  const { loggedIn } = useUser();
+
+  useEffect(() => {
+    if (loggedIn) {
+      router.push("/");
+    }
+  }, [loggedIn]);
+
+  const { setToken } = useAuthContext();
+
+  const [error, setError] = useState<string>("");
 
   const initialValues: FormValues = { email: "", password: "" };
+
   return (
     <Box h={"100vh"}>
       <NavBar></NavBar>
-      {isLogin ? (
-        <Box>You are already login</Box>
-      ) : (
-        <Flex justify="center">
+      <Wrapper>
+        <Flex justify="center" h="100vh">
           <Flex
             w={[300, 400, 500]}
             flexDirection="column"
             align={"center"}
             bgColor={"white"}
-            h={700}
+            h={600}
             borderRadius={10}
             boxShadow="2xl"
             mt={20}
@@ -68,11 +71,16 @@ const Login: React.FC<LoginProps> = () => {
                 const data = await response.json();
 
                 if (response.status === 201) {
-                  setTokenValue(data.accessToken);
-                  router.push("/");
-                  /* socket.emit("login", { role: "customer", userId: data.user }); */
+                  setToken(data.accessToken);
+                  setError("");
+                  sessionStorage.setItem("isLogin", "true");
+                  if (typeof router.query.next === "string") {
+                    router.push(router.query.next);
+                  } else {
+                    router.push("/");
+                  }
                 } else {
-                  console.log(data.message);
+                  setError(data.message);
                 }
               }}
             >
@@ -92,9 +100,13 @@ const Login: React.FC<LoginProps> = () => {
                       placeholder="Type your password"
                     ></CustomInput>
                     <NextLink href={"/forgotPassword"}>
-                      <Link color={"red"}>forgot password ?</Link>
+                      <Link color="blue">forgot password ?</Link>
                     </NextLink>
-
+                    {error && (
+                      <Flex justify="center">
+                        <Text color="red">{error}</Text>
+                      </Flex>
+                    )}
                     <Button
                       textColor={"white"}
                       w={[100, 300, 300]}
@@ -126,15 +138,10 @@ const Login: React.FC<LoginProps> = () => {
             </Formik>
           </Flex>
         </Flex>
-      )}
+      </Wrapper>
+      <Footer></Footer>
     </Box>
   );
 };
-
-/* export async function getServerSideProps({ req, res }: any) {
-  const data = getCookie("cookieToken");
-
-  return { props: { data } };
-} */
 
 export default Login;
