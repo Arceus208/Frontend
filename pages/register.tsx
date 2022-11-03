@@ -42,6 +42,7 @@ const Register: React.FC = ({}) => {
             h={700}
             borderRadius={10}
             boxShadow="2xl"
+            align="center"
             mt={20}
             px={20}
           >
